@@ -12,8 +12,10 @@ from polymorphic import PolymorphicModel, PolymorphicManager
 import hashlib
 import os
 
+from caching.base import CachingMixin, CachingManager
 
-class FileManager(PolymorphicManager):
+
+class FileManager(CachingManager, PolymorphicManager):
     def find_all_duplicates(self):
         r = {}
         for file_obj in self.all():
@@ -27,7 +29,7 @@ class FileManager(PolymorphicManager):
         return [i for i in self.exclude(pk=file_obj.pk).filter(sha1=file_obj.sha1)]
 
 
-class File(PolymorphicModel, mixins.IconsMixin):
+class File(CachingMixin, PolymorphicModel, mixins.IconsMixin):
     file_type = 'File'
     _icon = "file"
     folder = models.ForeignKey(Folder, verbose_name=_('folder'), related_name='all_files',
